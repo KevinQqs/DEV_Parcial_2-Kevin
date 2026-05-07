@@ -22,7 +22,6 @@ def root():
     return {"message": "API funcionando"}
 
 
-# OBTENER TODOS
 @app.get("/dogs", response_model=List[DogRead])
 def get_dogs(session: SessionDep):
 
@@ -32,8 +31,6 @@ def get_dogs(session: SessionDep):
 
     return dogs
 
-
-# OBTENER POR ID
 @app.get("/dogs/{dog_id}", response_model=DogRead)
 def get_dog(dog_id: int, session: SessionDep):
 
@@ -47,8 +44,6 @@ def get_dog(dog_id: int, session: SessionDep):
 
     return dog
 
-
-# CREAR
 @app.post("/dogs", response_model=DogRead)
 def create_dog(
         dog: DogCreate,
@@ -63,8 +58,6 @@ def create_dog(
 
     return db_dog
 
-
-# ACTUALIZAR
 @app.put("/dogs/{dog_id}", response_model=DogRead)
 def update_dog(
         dog_id: int,
