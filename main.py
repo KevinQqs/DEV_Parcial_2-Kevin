@@ -1,6 +1,6 @@
 from typing import List
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, status
 from sqlmodel import select
 
 from db import SessionDep, create_all_tables
@@ -17,12 +17,19 @@ app = FastAPI(
 )
 
 
-@app.get("/")
+@app.get(
+    "/",
+    status_code=status.HTTP_200_OK
+)
 def root():
     return {"message": "API funcionando"}
 
 
-@app.get("/dogs", response_model=List[DogRead])
+@app.get(
+    "/dogs",
+    response_model=List[DogRead],
+    status_code=status.HTTP_200_OK
+)
 def get_dogs(session: SessionDep):
 
     dogs = session.exec(
@@ -31,20 +38,33 @@ def get_dogs(session: SessionDep):
 
     return dogs
 
-@app.get("/dogs/{dog_id}", response_model=DogRead)
-def get_dog(dog_id: int, session: SessionDep):
+
+@app.get(
+    "/dogs/{dog_id}",
+    response_model=DogRead,
+    status_code=status.HTTP_200_OK
+)
+def get_dog(
+        dog_id: int,
+        session: SessionDep
+):
 
     dog = session.get(Dog, dog_id)
 
     if not dog:
         raise HTTPException(
-            status_code=404,
+            status_code=status.HTTP_404_NOT_FOUND,
             detail="Perro no encontrado"
         )
 
     return dog
 
-@app.post("/dogs", response_model=DogRead)
+
+@app.post(
+    "/dogs",
+    response_model=DogRead,
+    status_code=status.HTTP_201_CREATED
+)
 def create_dog(
         dog: DogCreate,
         session: SessionDep
@@ -58,7 +78,12 @@ def create_dog(
 
     return db_dog
 
-@app.put("/dogs/{dog_id}", response_model=DogRead)
+
+@app.put(
+    "/dogs/{dog_id}",
+    response_model=DogRead,
+    status_code=status.HTTP_200_OK
+)
 def update_dog(
         dog_id: int,
         dog_update: DogUpdate,
@@ -69,11 +94,13 @@ def update_dog(
 
     if not db_dog:
         raise HTTPException(
-            status_code=404,
+            status_code=status.HTTP_404_NOT_FOUND,
             detail="Perro no encontrado"
         )
 
-    dog_data = dog_update.model_dump(exclude_unset=True)
+    dog_data = dog_update.model_dump(
+        exclude_unset=True
+    )
 
     for key, value in dog_data.items():
         setattr(db_dog, key, value)
