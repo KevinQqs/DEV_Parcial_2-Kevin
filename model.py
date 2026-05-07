@@ -20,10 +20,3 @@ class Dog(SQLModel, table = True):
         sa_column_kwargs={"server_default": "NOW()"}
     )
 
-class Sticker(SQLModel, table = True):
-    __tablename__ = "Stickers"
-
-    created: datetime = Field(
-        default_factory=datetime.utcnow(),
-        sa_column_kwargs={"server_default": "NOW()"}
-    )
