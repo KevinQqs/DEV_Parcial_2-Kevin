@@ -1,33 +1,27 @@
-import os
-
-from sqlmodel import Session, create_engine, SQLModel
-from fastapi import FastAPI, Depends
 from typing import Annotated
-from dotenv import load_dotenv
+from contextlib import asynccontextmanager
 
+from fastapi import Depends
+from sqlmodel import Session, SQLModel, create_engine
 
-load_dotenv()
-
-DATABASE_URL = os.getenv("DATABASE_URL")
+DATABASE_URL = "sqlite:///database.db"
 
 engine = create_engine(
     DATABASE_URL,
-    echo=True
+    echo=True,
+    connect_args={"check_same_thread": False}
 )
 
 
-def create_all_tables(app: FastAPI):
-
-    if os.getenv("ENV") == "dev":
-        SQLModel.metadata.create_all(engine)
-
+@asynccontextmanager
+async def create_all_tables(app):
+    SQLModel.metadata.create_all(engine)
     yield
 
 
-def get_session() -> Session:
-
+def get_session():
     with Session(engine) as session:
-        yield
+        yield session
 
 
 SessionDep = Annotated[Session, Depends(get_session)]
