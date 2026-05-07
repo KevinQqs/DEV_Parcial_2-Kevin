@@ -6,7 +6,6 @@ from typing import Annotated
 from dotenv import load_dotenv
 
 
-
 load_dotenv()
 
 DATABASE_URL = os.getenv("DATABASE_URL")
@@ -18,12 +17,15 @@ engine = create_engine(
 
 
 def create_all_tables(app: FastAPI):
+
     if os.getenv("ENV") == "dev":
         SQLModel.metadata.create_all(engine)
+
     yield
 
 
 def get_session() -> Session:
+
     with Session(engine) as session:
         yield
 
