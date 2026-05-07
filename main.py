@@ -110,3 +110,27 @@ def update_dog(
     session.refresh(db_dog)
 
     return db_dog
+
+@app.delete(
+    "/dogs/{dog_id}",
+    status_code=status.HTTP_200_OK
+)
+def delete_dog(
+        dog_id: int,
+        session: SessionDep
+):
+
+    dog = session.get(Dog, dog_id)
+
+    if not dog:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Perro no encontrado"
+        )
+
+    session.delete(dog)
+    session.commit()
+
+    return {
+        "message": "Perro eliminado correctamente"
+    }

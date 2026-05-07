@@ -10,5 +10,7 @@ POST /dogs -> Crear un perro
 
 PUT /dogs/{dog_id} -> Actualizar un perro
 
+DELETE /dogs/{dog_id} -> Eliminar un perro
+
 Documentación:
 http://127.0.0.1:8000/docs
