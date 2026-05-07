@@ -3,12 +3,27 @@ from datetime import datetime
 from typing import Optional
 
 
-class Dog(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
+# Base
+class DogBase(SQLModel):
     name: str
     size: str
     dangerous: bool
     sterilized: bool
     breed: str
-    created: datetime = Field(default_factory=datetime.now)
 
+
+# Para crear
+class DogCreate(DogBase):
+    pass
+
+
+# Para leer
+class DogRead(DogBase):
+    id: int
+    created: datetime
+
+
+# Modelo de tabla
+class Dog(DogBase, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    created: datetime = Field(default_factory=datetime.now)

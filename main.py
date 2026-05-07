@@ -4,34 +4,34 @@ from fastapi import FastAPI
 from sqlmodel import select
 
 from db import SessionDep, create_all_tables
-from models import Dog
+from model import Dog, DogCreate, DogRead
 
 
 app = FastAPI(
     lifespan=create_all_tables
 )
 
+
 @app.get("/")
 async def root():
     return {"message": "Hello World"}
 
 
-@app.get("/hello/{name}")
-async def say_hello(name: str):
-    return {"message": f"Hello {name}"}
+# Crear perro
+@app.post("/dogs", response_model=DogRead)
+def create_dog(dog: DogCreate, session: SessionDep):
 
+    db_dog = Dog.model_validate(dog)
 
-@app.post("/dogs", response_model=Dog)
-def create_dog(dog: Dog, session: SessionDep):
-
-    session.add(dog)
+    session.add(db_dog)
     session.commit()
-    session.refresh(dog)
+    session.refresh(db_dog)
 
-    return dog
+    return db_dog
 
 
-@app.get("/dogs", response_model=List[Dog])
+# Obtener todos
+@app.get("/dogs", response_model=List[DogRead])
 def get_dogs(session: SessionDep):
 
     dogs = session.exec(
@@ -41,7 +41,8 @@ def get_dogs(session: SessionDep):
     return dogs
 
 
-@app.get("/dogs/{dog_id}", response_model=Dog)
+# Obtener por id
+@app.get("/dogs/{dog_id}", response_model=DogRead)
 def get_dog(dog_id: int, session: SessionDep):
 
     dog = session.get(Dog, dog_id)
